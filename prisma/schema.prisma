@@ -1,0 +1,86 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Business {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  state       String
+  zip         String?
+  country     String  @default("US")
+  lat         Float
+  lng         Float
+  category    String
+  phone       String?
+  website     String?
+  hours       Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  sources          ReviewSource[]
+  aggregatedScore  AggregatedScore?
+
+  @@index([lat, lng])
+  @@index([category])
+  @@index([name])
+}
+
+model ReviewSource {
+  id          String   @id @default(cuid())
+  businessId  String
+  platform    String   // "google" | "yelp" | "tripadvisor" | "foursquare"
+  externalId  String
+  url         String?
+  lastSynced  DateTime?
+  createdAt   DateTime @default(now())
+
+  business    Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+  reviews     Review[]
+
+  @@unique([businessId, platform])
+  @@index([businessId])
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  sourceId   String
+  businessId String
+  platform   String
+  rating     Float
+  text       String?
+  author     String?
+  authorUrl  String?
+  date       DateTime
+  verified   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  source     ReviewSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+
+  @@index([businessId])
+  @@index([platform])
+  @@index([date])
+}
+
+model AggregatedScore {
+  id            String   @id @default(cuid())
+  businessId    String   @unique
+  avgRating     Float
+  totalReviews  Int
+  googleRating  Float?
+  googleCount   Int?
+  yelpRating    Float?
+  yelpCount     Int?
+  otherRating   Float?
+  otherCount    Int?
+  lastSynced    DateTime @default(now())
+
+  business      Business @relation(fields: [businessId], references: [id], onDelete: Cascade)
+}
