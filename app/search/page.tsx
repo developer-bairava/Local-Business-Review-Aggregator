@@ -2,9 +2,12 @@
 
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
+import dynamic from "next/dynamic";
 import BusinessCard from "@/components/BusinessCard";
 import SearchBar from "@/components/SearchBar";
-import { SlidersHorizontal, Loader2 } from "lucide-react";
+import { SlidersHorizontal, Loader2, List, Map as MapIcon } from "lucide-react";
+
+const DynamicMap = dynamic(() => import("@/components/Map"), { ssr: false });
 
 const CATEGORIES = [
   { label: "All", value: "" },
@@ -25,6 +28,7 @@ function SearchResults() {
   const [loading, setLoading] = useState(false);
   const [category, setCategory] = useState("");
   const [minRating, setMinRating] = useState(0);
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     if (!query) return;
@@ -48,6 +52,30 @@ function SearchResults() {
       {/* Search bar */}
       <div className="mb-6">
         <SearchBar defaultQuery={query} defaultLocation={location} size="sm" />
+      </div>
+
+      {/* View toggle */}
+      <div className="flex justify-end mb-4">
+        <div className="flex items-center border border-gray-200 rounded-lg overflow-hidden bg-white shadow-sm">
+          <button
+            onClick={() => setShowMap(false)}
+            className={`flex items-center gap-1.5 px-3 py-2 text-sm transition-colors ${
+              !showMap ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <List className="w-4 h-4" />
+            List
+          </button>
+          <button
+            onClick={() => setShowMap(true)}
+            className={`flex items-center gap-1.5 px-3 py-2 text-sm transition-colors ${
+              showMap ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"
+            }`}
+          >
+            <MapIcon className="w-4 h-4" />
+            Map
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-6">
@@ -116,6 +144,16 @@ function SearchResults() {
             <div className="flex items-center justify-center py-20">
               <Loader2 className="w-6 h-6 animate-spin text-blue-500" />
             </div>
+          ) : showMap ? (
+            results.length > 0 ? (
+              <div style={{ height: "500px" }}>
+                <DynamicMap businesses={results} />
+              </div>
+            ) : (
+              <div className="text-center py-20 text-gray-400">
+                {query ? "No businesses found. Try a different search." : "Enter a search term above."}
+              </div>
+            )
           ) : results.length > 0 ? (
             <div className="grid gap-4">
               {results.map((b) => (

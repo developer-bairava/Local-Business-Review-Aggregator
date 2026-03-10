@@ -1,6 +1,6 @@
 export interface NormalizedReview {
   id: string;
-  platform: "google" | "yelp" | "tripadvisor" | "mock";
+  platform: "google" | "yelp" | "tripadvisor" | "mangrove" | "mock";
   rating: number;        // always 1-5
   text: string;
   author: string;

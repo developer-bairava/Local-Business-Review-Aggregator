@@ -4,6 +4,8 @@ import { aggregateReviews, NormalizedReview } from "@/lib/aggregator";
 import RatingBreakdown from "@/components/RatingBreakdown";
 import ReviewCard from "@/components/ReviewCard";
 import StarRating from "@/components/StarRating";
+import ReviewForm from "@/components/ReviewForm";
+import BusinessMapWrapper from "@/components/BusinessMapWrapper";
 import {
   MapPin,
   Phone,
@@ -119,6 +121,16 @@ export default async function BusinessPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* Map */}
+          <BusinessMapWrapper
+            id={business.id}
+            name={business.name}
+            address={business.address}
+            lat={business.lat}
+            lng={business.lng}
+            aggregatedScore={business.aggregatedScore}
+          />
+
           {/* Hours */}
           {hours.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -157,6 +169,9 @@ export default async function BusinessPage({ params }: PageProps) {
               </div>
             )}
           </div>
+
+          {/* Review Form */}
+          <ReviewForm businessId={id} />
         </div>
 
         {/* Right: Rating Breakdown */}

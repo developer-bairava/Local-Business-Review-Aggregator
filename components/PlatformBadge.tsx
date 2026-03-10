@@ -24,6 +24,16 @@ const PLATFORM_CONFIG: Record<
     color: "text-purple-700",
     bg: "bg-purple-50 border-purple-200",
   },
+  mangrove: {
+    label: "Mangrove",
+    color: "text-teal-700",
+    bg: "bg-teal-50 border-teal-200",
+  },
+  user: {
+    label: "User",
+    color: "text-indigo-700",
+    bg: "bg-indigo-50 border-indigo-200",
+  },
   mock: {
     label: "Demo",
     color: "text-gray-700",
